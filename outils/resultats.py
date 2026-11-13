@@ -16,7 +16,7 @@ Fonctionnement :
   - chaque fichier repart d'une base neuve ; les blocs d'un même fichier s'enchaînent.
 
 Usage :
-    python3 outils/resultats.py              # traite cours/, exercices/
+    python3 outils/resultats.py              # traite cours/, exercices/, quiz/
     python3 outils/resultats.py fichier.md   # un seul fichier
 
 Limites : SQLite n'est pas MySQL. Les requêtes propres à MySQL non émulées doivent être
@@ -385,7 +385,7 @@ def main():
     if len(sys.argv) > 1:
         fichiers = [pathlib.Path(a) for a in sys.argv[1:]]
     else:
-        fichiers = sorted((RACINE / "cours").glob("*.md")) + sorted((RACINE / "exercices").rglob("*.md"))
+        fichiers = sorted((RACINE / "cours").glob("*.md")) + sorted((RACINE / "exercices").rglob("*.md")) + sorted((RACINE / "quiz").glob("*.md"))
     erreurs = 0
     for f in fichiers:
         e = traite(f)
