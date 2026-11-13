@@ -1,7 +1,7 @@
 # Exercices — Module 5 : Mise à jour des données
 
 > Corrigés : [`solutions/05-mise-a-jour.md`](solutions/05-mise-a-jour.md)
-> 🔄 Rechargez `db/essais_cliniques.sql` avant de commencer, et à la fin.
+> 🔄 [Remettez la base à zéro](../cours/00-accueil.md#remettre-la-base-à-zéro) avant de commencer, et à la fin.
 > Pour chaque `UPDATE` / `DELETE` : écrivez d'abord le `SELECT` qui montre les lignes visées.
 
 **Ex 5.1** ⭐ — Un nouveau centre rejoint le réseau : « Clinique Océane » à Biarritz (France). L'ajouter sans préciser le pays, puis vérifier que le pays a bien été renseigné.

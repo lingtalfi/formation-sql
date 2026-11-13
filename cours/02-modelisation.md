@@ -257,7 +257,7 @@ SELECT * FROM centre WHERE ville = 'Rennes';
 ```
 <!-- /resultat -->
 
-> 🔄 Pour retirer ce centre de test : `DELETE FROM centre WHERE ville = 'Rennes';` (ou rechargez la base).
+> 🔄 Pour retirer ce centre de test : `DELETE FROM centre WHERE ville = 'Rennes';` (ou [remettez la base à zéro](00-accueil.md#remettre-la-base-à-zéro)).
 
 **7. Une contrainte composée** — un patient doit appartenir à un centre **qui participe à son étude** : c'est la clé étrangère composée `fk_patient_etude_centre (etude_id, centre_id) → etude_centre`. Le centre 8 (Liège) ne participe pas à CARDIO-01 :
 

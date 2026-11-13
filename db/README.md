@@ -4,14 +4,11 @@ Toute la formation s'appuie sur cette base. Les données sont **entièrement fic
 
 > 📖 **Vous ne connaissez pas le monde des essais cliniques ?** Commencez par [**Comprendre la base**](comprendre-la-base.md) : les acteurs, le parcours d'un patient et les KPI, expliqués simplement.
 
-## Installation en 1 minute
+## Installation
 
-1. Ouvrir DBeaver et se connecter au serveur MySQL local.
-2. Menu **Fichier → Ouvrir un fichier…** → choisir `db/essais_cliniques.sql`.
-3. Exécuter le script entier : **Alt + X** (ou bouton « Exécuter le script »).
-4. Rafraîchir la liste des bases (F5) : `essais_cliniques` apparaît.
+En bref : dans DBeaver, **Fichier → Ouvrir un fichier…** → `essais_cliniques.sql`, choisir la connexion MySQL (**Ctrl + 9**), puis **Alt + X** pour exécuter tout le script, et **F5** pour rafraîchir.
 
-> Le script commence par `DROP DATABASE IF EXISTS essais_cliniques` : on peut le relancer à tout moment pour **remettre la base à zéro** (après des exercices de modification par exemple).
+Pas à pas détaillé, menu par menu : [module 0, étape 4](../cours/00-accueil.md#étape-4--charger-la-base-dentraînement). Pour revenir à la base d'origine à tout moment : [remettre la base à zéro](../cours/00-accueil.md#remettre-la-base-à-zéro).
 
 | Fichier | Rôle |
 |---|---|

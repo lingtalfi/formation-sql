@@ -2,7 +2,7 @@
 
 > **Objectif** : ajouter (`INSERT`), modifier (`UPDATE`) et supprimer (`DELETE`) des lignes, en ciblant précisément les lignes concernées avec `WHERE`, et travailler **sans risque** grâce aux transactions.
 > **Durée indicative** : 3 h
-> 🔄 Ce module modifie la base. Rechargez `db/essais_cliniques.sql` à la fin (ou à tout moment en cas d'erreur).
+> 🔄 Ce module modifie la base. [Remettez-la à zéro](00-accueil.md#remettre-la-base-à-zéro) à la fin (ou à tout moment en cas d'erreur).
 
 ---
 

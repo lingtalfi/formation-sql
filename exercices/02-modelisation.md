@@ -1,7 +1,7 @@
 # Exercices — Module 2 : Modélisation et intégrité
 
 > Corrigés : [`solutions/02-modelisation.md`](solutions/02-modelisation.md)
-> 🔄 Ces exercices modifient la structure : rechargez `db/essais_cliniques.sql` à la fin.
+> 🔄 Ces exercices modifient la structure : [remettez la base à zéro](../cours/00-accueil.md#remettre-la-base-à-zéro) à la fin.
 
 **Ex 2.1 — Choisir les types.** Proposer un type SQL pour chacune de ces données : a) le numéro de lot d'un médicament (`LOT-2025-00412`) ; b) la température corporelle (`37,8`) ; c) la date et l'heure exacte d'une prise de sang ; d) le fait qu'un patient soit fumeur ; e) le nombre de comprimés délivrés ; f) un commentaire libre de l'investigateur.
 

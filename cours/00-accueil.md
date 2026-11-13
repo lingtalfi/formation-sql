@@ -65,10 +65,49 @@ On a besoin de deux logiciels :
 
 ### Étape 4 — Charger la base d'entraînement
 
-1. **Fichier → Ouvrir un fichier…** → `db/essais_cliniques.sql`.
-2. Associer l'éditeur à la connexion MySQL si DBeaver le demande.
-3. Exécuter **tout le script** : **Alt + X**.
-4. Dans le panneau de gauche, rafraîchir (**F5**) : la base `essais_cliniques` apparaît avec ses 8 tables.
+La base est livrée sous forme d'un **script SQL** : un simple fichier texte, `essais_cliniques.sql`, qui contient toutes les instructions pour créer les tables et les remplir. « Charger la base », c'est **faire exécuter ce fichier par MySQL**, via DBeaver.
+
+> Dans DBeaver, les menus sont indiqués en français, suivis de leur nom anglais *en italique* (DBeaver s'affiche dans la langue de votre système).
+
+**4.1 — Récupérer le fichier**
+
+- Si vous avez cloné le dépôt : le fichier est dans `db/essais_cliniques.sql`.
+- Sinon, sur GitHub : ouvrir [`db/essais_cliniques.sql`](../db/essais_cliniques.sql), puis cliquer sur l'icône **Télécharger** (*Download raw file*, flèche vers le bas, en haut à droite du fichier). Il arrive dans votre dossier *Téléchargements*.
+
+**4.2 — Ouvrir le fichier dans DBeaver**
+
+Menu **Fichier → Ouvrir un fichier…** (*File → Open File…*) → choisir `essais_cliniques.sql` → **Ouvrir**.
+
+Le script s'affiche dans un **éditeur SQL** (un onglet au centre de l'écran). On voit son contenu : des `CREATE TABLE`, puis des centaines de lignes `INSERT INTO`. Rien n'est encore exécuté.
+
+**4.3 — Dire à DBeaver sur quel serveur l'exécuter**
+
+Un fichier ouvert ainsi n'est rattaché à **aucune connexion**. Dans la barre d'outils, au-dessus de l'éditeur, le sélecteur de connexion active affiche alors `N/A` :
+
+```
+ Barre d'outils :   … [ 🔌 N/A        ▾ ]  [ < N/A > ▾ ] …
+                         ▲                     ▲
+                         connexion active      base (schéma) active
+```
+
+1. Cliquer sur le **premier** sélecteur (`N/A`) — raccourci **Ctrl + 9**.
+2. Choisir votre connexion MySQL (par ex. `localhost`), puis **Sélectionner** (*Select*).
+
+Le sélecteur affiche maintenant le nom de la connexion. Le second sélecteur (la base) peut rester vide : le script crée et sélectionne lui-même la base `essais_cliniques`.
+
+**4.4 — Exécuter tout le script**
+
+Menu **Éditeur SQL → Exécuter le script SQL** (*SQL Editor → Execute SQL Script*), ou **Alt + X**, ou le bouton ▶️📄 « Exécuter le script » dans la barre verticale à gauche de l'éditeur.
+
+> ⚠️ **Pas Ctrl + Entrée** : ce raccourci n'exécute que **l'instruction sous le curseur**, pas tout le fichier.
+
+DBeaver exécute les instructions une par une (quelques secondes). Si une fenêtre de confirmation apparaît (le script commence par supprimer la base si elle existe), validez.
+
+À la fin, l'onglet **Statistiques** (*Statistics*), en bas de l'éditeur, résume l'exécution : nombre de requêtes et **0 erreur**. Si une erreur s'affiche, notez son message : c'est presque toujours la connexion qui n'a pas été choisie (étape 4.3).
+
+**4.5 — Rafraîchir**
+
+Dans le panneau de gauche (*Database Navigator*), clic droit sur votre connexion → **Rafraîchir** (*Refresh*) ou **F5**. Dépliez **Bases de données** (*Databases*) : `essais_cliniques` apparaît, avec ses 8 tables dans **Tables**.
 
 ### Étape 5 — Vérifier
 
@@ -90,7 +129,22 @@ SELECT COUNT(*) AS nb_patients FROM patient;
 
 Si vous obtenez ce nombre, tout est prêt. 🎉
 
-> **Remettre la base à zéro** : réexécutez simplement `essais_cliniques.sql`. Faites-le sans hésiter après les exercices du module 5 (modification des données).
+### Remettre la base à zéro
+
+Après des exercices qui modifient les données (modules 2 et 5 surtout), ou si vous pensez avoir « cassé » quelque chose, vous pouvez à tout moment revenir à la base d'origine. C'est **exactement l'étape 4**, rejouée :
+
+1. **Fichier → Ouvrir un fichier…** (*File → Open File…*) → `essais_cliniques.sql`
+   (ou, s'il est encore ouvert dans un onglet, cliquez simplement sur cet onglet) ;
+2. vérifiez que le sélecteur de connexion affiche votre connexion MySQL (sinon **Ctrl + 9**) ;
+3. **Alt + X** (*Execute SQL Script*) ;
+4. **F5** sur la connexion dans le panneau de gauche.
+
+Le script commence par `DROP DATABASE IF EXISTS essais_cliniques` : il **efface entièrement** la base puis la recrée à l'identique. Tout ce que vous y aviez ajouté (tables, vues, lignes modifiées) disparaît. Si vous voulez garder vos propres requêtes, enregistrez-les dans des fichiers `.sql` à part : elles ne sont pas stockées dans la base.
+
+> 💡 **En ligne de commande** (si vous avez un client `mysql` installé, ou MySQL dans Docker), la même opération tient en une ligne :
+> ```bash
+> mysql -h 127.0.0.1 -u root -p --default-character-set=utf8mb4 < essais_cliniques.sql
+> ```
 
 ### Raccourcis DBeaver utiles
 
