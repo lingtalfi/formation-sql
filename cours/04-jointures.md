@@ -238,26 +238,26 @@ FROM etude_centre ec
 JOIN etude         e ON ec.etude_id  = e.id
 JOIN centre        c ON ec.centre_id = c.id
 JOIN investigateur i ON ec.investigateur_principal_id = i.id
-ORDER BY e.code, c.nom;
+ORDER BY e.code, c.id;
 ```
 <!-- resultat:20 -->
 ```text
 +-----------+-----------------------------+-------------------------+----------------+
 | etude     | centre                      | investigateur_principal | date_ouverture |
 +-----------+-----------------------------+-------------------------+----------------+
+| CARDIO-01 | Clinique du Val de Loire    | Claire Martin           | 2024-03-15     |
 | CARDIO-01 | CHU Atlantique              | Thomas Moreau           | 2024-04-01     |
+| CARDIO-01 | Hôpital Saint-Roch          | Antoine Garcia          | 2024-05-10     |
 | CARDIO-01 | Centre Hospitalier du Rhône | Manon Girard            | 2024-06-01     |
 | CARDIO-01 | Clinique du Léman           | Anna Müller             | 2024-09-01     |
-| CARDIO-01 | Clinique du Val de Loire    | Claire Martin           | 2024-03-15     |
-| CARDIO-01 | Hôpital Saint-Roch          | Antoine Garcia          | 2024-05-10     |
-| DERM-05   | Centre Médical des Ardennes | Marc Dubois             | NULL           |
 | DERM-05   | Clinique du Val de Loire    | Lucas Robert            | NULL           |
-| DIAB-02   | Clinique des Flandres       | Emma Lambert            | 2025-02-15     |
+| DERM-05   | Centre Médical des Ardennes | Marc Dubois             | NULL           |
 | DIAB-02   | Clinique du Val de Loire    | Hugo Bernard            | 2025-02-01     |
-| DIAB-02   | Hospital del Sol            | Carmen López            | 2025-05-01     |
 | DIAB-02   | Hôpital Saint-Roch          | Léa Roux                | 2025-03-01     |
-| NEURO-04  | CHU Atlantique              | Camille Lefèvre         | 2023-02-01     |
+| DIAB-02   | Clinique des Flandres       | Emma Lambert            | 2025-02-15     |
+| DIAB-02   | Hospital del Sol            | Carmen López            | 2025-05-01     |
 | NEURO-04  | Clinique du Val de Loire    | Inès Petit              | 2023-01-20     |
+| NEURO-04  | CHU Atlantique              | Camille Lefèvre         | 2023-02-01     |
 | ONCO-03   | CHU Atlantique              | Sophie Durand           | 2025-07-01     |
 | ONCO-03   | Centre Hospitalier du Rhône | Julien Fournier         | 2025-08-15     |
 | ONCO-03   | Clinique du Léman           | Nicolas Favre           | 2025-10-01     |
@@ -442,7 +442,7 @@ LEFT JOIN patient p                ON p.centre_id   = c.id
 LEFT JOIN evenement_indesirable ei ON ei.patient_id = p.id
 WHERE ei.grave = TRUE
 GROUP BY c.nom
-ORDER BY nb_ei_graves DESC;
+ORDER BY nb_ei_graves DESC, c.nom;
 ```
 <!-- resultat -->
 ```text
@@ -453,8 +453,8 @@ ORDER BY nb_ei_graves DESC;
 | Clinique du Val de Loire    | 7            |
 | Hôpital Saint-Roch          | 4            |
 | Clinique des Flandres       | 3            |
-| Clinique du Léman           | 2            |
 | Centre Hospitalier du Rhône | 2            |
+| Clinique du Léman           | 2            |
 +-----------------------------+--------------+
 6 lignes
 ```
@@ -467,7 +467,7 @@ FROM centre c
 LEFT JOIN patient p                ON p.centre_id   = c.id
 LEFT JOIN evenement_indesirable ei ON ei.patient_id = p.id AND ei.grave = TRUE
 GROUP BY c.nom
-ORDER BY nb_ei_graves DESC;
+ORDER BY nb_ei_graves DESC, c.nom;
 ```
 <!-- resultat -->
 ```text
@@ -478,10 +478,10 @@ ORDER BY nb_ei_graves DESC;
 | Clinique du Val de Loire    | 7            |
 | Hôpital Saint-Roch          | 4            |
 | Clinique des Flandres       | 3            |
-| Clinique du Léman           | 2            |
 | Centre Hospitalier du Rhône | 2            |
-| Hospital del Sol            | 0            |
+| Clinique du Léman           | 2            |
 | Centre Médical des Ardennes | 0            |
+| Hospital del Sol            | 0            |
 +-----------------------------+--------------+
 8 lignes
 ```
@@ -541,13 +541,13 @@ ORDER BY e.code;
 
 ### Exemple — comparer deux séries mensuelles
 
-On veut comparer, mois par mois en 2025, les inclusions de DIAB-02 et d'ONCO-03. Certains mois n'ont d'inclusion que dans une des deux études.
+On veut comparer, mois par mois en 2025, les inclusions de CARDIO-01 et d'ONCO-03. Certains mois n'ont d'inclusion que dans une des deux études.
 
 ```sql
 -- SQL STANDARD (PostgreSQL, SQL Server, Oracle…) — refusé par MySQL
-SELECT COALESCE(d.mois, o.mois) AS mois, d.nb AS diab, o.nb AS onco
+SELECT COALESCE(d.mois, o.mois) AS mois, d.nb AS cardio, o.nb AS onco
 FROM      (SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
-             FROM patient WHERE etude_id = 2 AND YEAR(date_inclusion) = 2025 GROUP BY mois) d
+             FROM patient WHERE etude_id = 1 AND YEAR(date_inclusion) = 2025 GROUP BY mois) d
 FULL OUTER JOIN
           (SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
              FROM patient WHERE etude_id = 3 AND YEAR(date_inclusion) = 2025 GROUP BY mois) o
@@ -557,16 +557,16 @@ ORDER BY mois;
 
 ```sql
 -- ÉMULATION MySQL : LEFT JOIN  UNION  RIGHT JOIN
-SELECT d.mois, d.nb AS diab, o.nb AS onco
+SELECT d.mois AS mois, d.nb AS cardio, o.nb AS onco
 FROM      (SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
-             FROM patient WHERE etude_id = 2 AND YEAR(date_inclusion) = 2025 GROUP BY mois) d
+             FROM patient WHERE etude_id = 1 AND YEAR(date_inclusion) = 2025 GROUP BY mois) d
 LEFT JOIN (SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
              FROM patient WHERE etude_id = 3 AND YEAR(date_inclusion) = 2025 GROUP BY mois) o
        ON d.mois = o.mois
 UNION
-SELECT o.mois, d.nb AS diab, o.nb AS onco
+SELECT o.mois, d.nb AS cardio, o.nb AS onco
 FROM      (SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
-             FROM patient WHERE etude_id = 2 AND YEAR(date_inclusion) = 2025 GROUP BY mois) d
+             FROM patient WHERE etude_id = 1 AND YEAR(date_inclusion) = 2025 GROUP BY mois) d
 RIGHT JOIN (SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
              FROM patient WHERE etude_id = 3 AND YEAR(date_inclusion) = 2025 GROUP BY mois) o
        ON d.mois = o.mois
@@ -574,7 +574,23 @@ ORDER BY mois;
 ```
 <!-- resultat:15 -->
 ```text
-ERREUR DE GÉNÉRATION : 1st ORDER BY term does not match any column in the result set
++---------+--------+------+
+| mois    | cardio | onco |
++---------+--------+------+
+| 2025-01 | 4      | NULL |
+| 2025-02 | 8      | NULL |
+| 2025-03 | 4      | NULL |
+| 2025-04 | 5      | NULL |
+| 2025-05 | 8      | NULL |
+| 2025-06 | 5      | NULL |
+| 2025-07 | 6      | 1    |
+| 2025-08 | 16     | 1    |
+| 2025-09 | 11     | 1    |
+| 2025-10 | 4      | 2    |
+| 2025-11 | NULL   | 1    |
+| 2025-12 | NULL   | 3    |
++---------+--------+------+
+12 lignes
 ```
 <!-- /resultat -->
 
@@ -790,8 +806,8 @@ ORDER BY ville;
 | ville       |
 +-------------+
 | Genève      |
-| Lille       |
 | Liège       |
+| Lille       |
 | Lyon        |
 | Montpellier |
 | Nantes      |
@@ -838,27 +854,27 @@ FROM tmp_inclus_centre t
 JOIN etude_centre ec ON ec.etude_id = t.etude_id AND ec.centre_id = t.centre_id
 JOIN etude  e ON e.id = t.etude_id
 JOIN centre c ON c.id = t.centre_id
-ORDER BY atteinte_pct DESC;
+ORDER BY atteinte_pct DESC, e.code, c.id;
 ```
 <!-- resultat:20 -->
 ```text
 +-----------+-----------------------------+--------+---------------------+--------------+
 | code      | nom                         | inclus | objectif_inclusions | atteinte_pct |
 +-----------+-----------------------------+--------+---------------------+--------------+
-| CARDIO-01 | Clinique du Val de Loire    | 33     | 30                  | 110.0        |
-| CARDIO-01 | Hôpital Saint-Roch          | 26     | 25                  | 104.0        |
-| NEURO-04  | Clinique du Val de Loire    | 15     | 15                  | 100.0        |
-| NEURO-04  | CHU Atlantique              | 15     | 15                  | 100.0        |
-| CARDIO-01 | Clinique du Léman           | 18     | 20                  | 90.0         |
-| CARDIO-01 | CHU Atlantique              | 21     | 25                  | 84.0         |
-| DIAB-02   | Clinique des Flandres       | 19     | 25                  | 76.0         |
-| DIAB-02   | Clinique du Val de Loire    | 15     | 20                  | 75.0         |
-| CARDIO-01 | Centre Hospitalier du Rhône | 14     | 20                  | 70.0         |
-| ONCO-03   | CHU Atlantique              | 10     | 20                  | 50.0         |
-| DIAB-02   | Hôpital Saint-Roch          | 9      | 20                  | 45.0         |
-| DIAB-02   | Hospital del Sol            | 6      | 15                  | 40.0         |
-| ONCO-03   | Centre Hospitalier du Rhône | 7      | 20                  | 35.0         |
-| ONCO-03   | Clinique du Léman           | 4      | 20                  | 20.0         |
+| CARDIO-01 | Clinique du Val de Loire    | 33     | 30                  | 110          |
+| CARDIO-01 | Hôpital Saint-Roch          | 26     | 25                  | 104          |
+| NEURO-04  | Clinique du Val de Loire    | 15     | 15                  | 100          |
+| NEURO-04  | CHU Atlantique              | 15     | 15                  | 100          |
+| CARDIO-01 | Clinique du Léman           | 18     | 20                  | 90           |
+| CARDIO-01 | CHU Atlantique              | 21     | 25                  | 84           |
+| DIAB-02   | Clinique des Flandres       | 19     | 25                  | 76           |
+| DIAB-02   | Clinique du Val de Loire    | 15     | 20                  | 75           |
+| CARDIO-01 | Centre Hospitalier du Rhône | 14     | 20                  | 70           |
+| ONCO-03   | CHU Atlantique              | 10     | 20                  | 50           |
+| DIAB-02   | Hôpital Saint-Roch          | 9      | 20                  | 45           |
+| DIAB-02   | Hospital del Sol            | 6      | 15                  | 40           |
+| ONCO-03   | Centre Hospitalier du Rhône | 7      | 20                  | 35           |
+| ONCO-03   | Clinique du Léman           | 4      | 20                  | 20           |
 +-----------+-----------------------------+--------+---------------------+--------------+
 14 lignes
 ```
@@ -924,21 +940,37 @@ FROM etape2 …;
 **Le FULL OUTER JOIN de 4.4, réécrit avec des CTE** :
 
 ```sql
-WITH diab AS (
+WITH cardio AS (
     SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
-    FROM patient WHERE etude_id = 2 AND YEAR(date_inclusion) = 2025 GROUP BY mois
+    FROM patient WHERE etude_id = 1 AND YEAR(date_inclusion) = 2025 GROUP BY mois
 ), onco AS (
     SELECT DATE_FORMAT(date_inclusion, '%Y-%m') AS mois, COUNT(*) AS nb
     FROM patient WHERE etude_id = 3 AND YEAR(date_inclusion) = 2025 GROUP BY mois
 )
-SELECT d.mois, d.nb AS diab, o.nb AS onco FROM diab d LEFT JOIN onco o ON d.mois = o.mois
+SELECT d.mois AS mois, d.nb AS cardio, o.nb AS onco FROM cardio d LEFT JOIN onco o ON d.mois = o.mois
 UNION
-SELECT o.mois, d.nb, o.nb FROM diab d RIGHT JOIN onco o ON d.mois = o.mois
+SELECT o.mois, d.nb, o.nb FROM cardio d RIGHT JOIN onco o ON d.mois = o.mois
 ORDER BY mois;
 ```
 <!-- resultat:15 -->
 ```text
-ERREUR DE GÉNÉRATION : 1st ORDER BY term does not match any column in the result set
++---------+--------+------+
+| mois    | cardio | onco |
++---------+--------+------+
+| 2025-01 | 4      | NULL |
+| 2025-02 | 8      | NULL |
+| 2025-03 | 4      | NULL |
+| 2025-04 | 5      | NULL |
+| 2025-05 | 8      | NULL |
+| 2025-06 | 5      | NULL |
+| 2025-07 | 6      | 1    |
+| 2025-08 | 16     | 1    |
+| 2025-09 | 11     | 1    |
+| 2025-10 | 4      | 2    |
+| 2025-11 | NULL   | 1    |
+| 2025-12 | NULL   | 3    |
++---------+--------+------+
+12 lignes
 ```
 <!-- /resultat -->
 
@@ -975,11 +1007,11 @@ ORDER BY e.code;
 +-----------+----------+--------+--------------+-------+--------------+
 | code      | objectif | inclus | atteinte_pct | nb_ei | nb_ei_graves |
 +-----------+----------+--------+--------------+-------+--------------+
-| CARDIO-01 | 120      | 112    | 93.0         | 107   | 11           |
-| DERM-05   | 100      | 0      | 0.0          | 0     | 0            |
-| DIAB-02   | 80       | 49     | 61.0         | 47    | 6            |
-| NEURO-04  | 30       | 30     | 100.0        | 28    | 5            |
-| ONCO-03   | 60       | 21     | 35.0         | 26    | 4            |
+| CARDIO-01 | 120      | 112    | 93           | 107   | 11           |
+| DERM-05   | 100      | 0      | 0            | 0     | 0            |
+| DIAB-02   | 80       | 49     | 61           | 47    | 6            |
+| NEURO-04  | 30       | 30     | 100          | 28    | 5            |
+| ONCO-03   | 60       | 21     | 35           | 26    | 4            |
 +-----------+----------+--------+--------------+-------+--------------+
 5 lignes
 ```

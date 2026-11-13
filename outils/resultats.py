@@ -28,6 +28,7 @@ import pathlib
 import re
 import sqlite3
 import sys
+import unicodedata
 
 RACINE = pathlib.Path(__file__).resolve().parent.parent
 BASE = RACINE / "db" / "essais_cliniques.sql"
@@ -167,6 +168,45 @@ FONCTIONS = [
 # ---------------------------------------------------------------------------
 
 
+def cle_mysql(t):
+    """Clé de comparaison imitant la collation MySQL utf8mb4_0900_ai_ci (sans casse ni accents)."""
+    t = t.replace("œ", "oe").replace("Œ", "OE").replace("æ", "ae").replace("Æ", "AE")
+    t = "".join(c for c in unicodedata.normalize("NFKD", t) if not unicodedata.combining(c))
+    return t.casefold()
+
+
+def collation_mysql(a, b):
+    a, b = cle_mysql(a), cle_mysql(b)
+    return (a > b) - (a < b)
+
+
+def round_entier(sql):
+    """ROUND(x) sans 2e argument → entier (comme MySQL, qui n'affiche pas de décimale)."""
+    out, i = [], 0
+    while True:
+        m = re.compile(r"\bROUND\(", re.I).search(sql, i)
+        if not m:
+            out.append(sql[i:])
+            return "".join(out)
+        depth, j, virgule = 1, m.end(), False
+        while depth:
+            c = sql[j]
+            if c == "(":
+                depth += 1
+            elif c == ")":
+                depth -= 1
+            elif c == "," and depth == 1:
+                virgule = True
+            j += 1
+        interieur = round_entier(sql[m.end():j - 1])
+        out.append(sql[i:m.start()])
+        if virgule:
+            out.append("ROUND(" + interieur + ")")
+        else:
+            out.append("CAST(ROUND(" + interieur + ") AS INTEGER)")
+        i = j
+
+
 def auto_increment(sql):
     """INT … AUTO_INCREMENT → INTEGER PRIMARY KEY (équivalent SQLite)."""
     if not re.search(r"AUTO_INCREMENT", sql, re.I):
@@ -178,6 +218,7 @@ def auto_increment(sql):
 
 def traduit(sql):
     sql = auto_increment(sql)
+    sql = round_entier(sql)
     sql = re.sub(r"TIMESTAMPDIFF\(\s*(\w+)\s*,", r"TIMESTAMPDIFF('\1',", sql, flags=re.I)
     sql = re.sub(r"INTERVAL\s+(-?\d+)\s+(DAY|WEEK|MONTH|YEAR)", r"'\1 \2'", sql, flags=re.I)
     sql = re.sub(r"EXTRACT\(\s*(\w+)\s+FROM\s+", r"EXTRACT_('\1', ", sql, flags=re.I)
@@ -228,6 +269,7 @@ def decoupe(sql):
 
 def nouvelle_base():
     con = sqlite3.connect(":memory:", isolation_level=None)
+    con.create_collation("MYSQLCI", collation_mysql)
     for nom, n, f in FONCTIONS:
         con.create_function(nom, n, f, deterministic=True)
     con.execute("PRAGMA foreign_keys = ON")
@@ -237,6 +279,7 @@ def nouvelle_base():
         if tete.startswith(("DROP DATABASE", "CREATE DATABASE", "USE ")):
             continue
         stmt = auto_increment(stmt)
+        stmt = re.sub(r"(\bVARCHAR\(\d+\)|\bCHAR\(\d+\))", r"\1 COLLATE MYSQLCI", stmt)
         con.execute(stmt)
     return con
 
