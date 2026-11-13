@@ -124,31 +124,31 @@ SELECT DISTINCT pays FROM centre;
 `DISTINCT` porte sur **toute la ligne** du résultat :
 
 ```sql
-SELECT DISTINCT etude_id, bras FROM patient;
+SELECT DISTINCT etude_id, bras FROM patient ORDER BY etude_id, bras;
 ```
 <!-- resultat -->
 ```text
 +----------+------------+
 | etude_id | bras       |
 +----------+------------+
+| 1        | NULL       |
 | 1        | placebo    |
 | 1        | traitement |
-| 1        | NULL       |
 | 2        | NULL       |
 | 2        | placebo    |
 | 2        | traitement |
-| 3        | placebo    |
 | 3        | NULL       |
+| 3        | placebo    |
 | 3        | traitement |
-| 4        | traitement |
-| 4        | placebo    |
 | 4        | NULL       |
+| 4        | placebo    |
+| 4        | traitement |
 +----------+------------+
 12 lignes
 ```
 <!-- /resultat -->
 
-Remarquez les lignes avec `bras` à NULL : ce sont les patients non inclus (pas de bras attribué).
+(Le `ORDER BY` trie le résultat : on le verra en 3.3.) Remarquez les lignes avec `bras` à NULL : ce sont les patients non inclus (pas de bras attribué).
 
 ---
 
@@ -742,7 +742,7 @@ SELECT id, type_visite, date_prevue, date_realisee,
        DATEDIFF(date_realisee, date_prevue) AS retard_jours
 FROM visite
 WHERE date_realisee > date_prevue
-ORDER BY retard_jours DESC
+ORDER BY retard_jours DESC, id
 LIMIT 5;
 ```
 <!-- resultat -->
@@ -1016,7 +1016,6 @@ HAVING  condition sur les GROUPES         ← après le regroupement (peut utili
  │ 140│ 2        │               ├─────────────────────────┤        └──────────┴──────┘
  │ …  │ …        │               │ etude_id = 3  …         │
  └────┴──────────┘               └─────────────────────────┘
-                                   (les nombres affichés ici sont illustratifs)
 ```
 
 ### Exemples
@@ -1102,22 +1101,23 @@ SELECT terme, COUNT(*) AS nb
 FROM evenement_indesirable
 GROUP BY terme
 ORDER BY nb DESC
-LIMIT 5;
+LIMIT 4;
 ```
 <!-- resultat -->
 ```text
-+---------------------+----+
-| terme               | nb |
-+---------------------+----+
-| Douleur abdominale  | 34 |
-| Vertiges            | 24 |
-| Fatigue             | 23 |
-| Céphalées           | 20 |
-| Œdème des chevilles | 17 |
-+---------------------+----+
-5 lignes
++--------------------+----+
+| terme              | nb |
++--------------------+----+
+| Douleur abdominale | 34 |
+| Vertiges           | 24 |
+| Fatigue            | 23 |
+| Céphalées          | 20 |
++--------------------+----+
+4 lignes
 ```
 <!-- /resultat -->
+
+> ⚠️ Pourquoi `LIMIT 4` et pas 5 ? Parce que trois termes sont ex æquo à la 5ᵉ place (17 occurrences) : un « top 5 » en garderait un au hasard. Vérifiez toujours les égalités autour de la limite.
 
 **Grouper sur une expression** — inclusions par mois (KPI de rythme de recrutement) :
 
@@ -1397,7 +1397,8 @@ WHERE EXISTS (
     FROM evenement_indesirable ei
     WHERE ei.patient_id = p.id
       AND ei.grave = TRUE
-);
+)
+ORDER BY p.code_patient;
 ```
 <!-- resultat:5 -->
 ```text
