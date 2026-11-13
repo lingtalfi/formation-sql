@@ -93,7 +93,9 @@ Un fichier ouvert ainsi n'est rattaché à **aucune connexion**. Dans la barre d
 1. Cliquer sur le **premier** sélecteur (`N/A`) — raccourci **Ctrl + 9**.
 2. Choisir votre connexion MySQL (par ex. `localhost`), puis **Sélectionner** (*Select*).
 
-Le sélecteur affiche maintenant le nom de la connexion. Le second sélecteur (la base) peut rester vide : le script crée et sélectionne lui-même la base `essais_cliniques`.
+Le sélecteur affiche maintenant le nom de la connexion, et le titre de l'onglet passe de `<none> essais_cliniques.sql` à `<localhost> essais_cliniques.sql`.
+
+> 🚩 Si vous oubliez cette étape, l'exécution s'arrête aussitôt avec le message **« Cannot obtain session — No active connection »**. Cliquez sur **OK**, faites l'étape 4.3, puis relancez **Alt + X**. Le second sélecteur (la base) peut rester vide : le script crée et sélectionne lui-même la base `essais_cliniques`.
 
 **4.4 — Exécuter tout le script**
 
