@@ -212,6 +212,32 @@ FROM information_schema.tables
 WHERE table_schema = 'essais_cliniques';
 ```
 
+> **Qu'est-ce que `INFORMATION_SCHEMA` ?**
+> C'est le **dictionnaire de données** du serveur : une base spéciale, en **lecture seule**, que le SGBD tient à jour tout seul et qui décrit… toutes les autres bases. On n'y trouve pas les données (les patients, les études), mais les **métadonnées** : quelles bases existent, quelles tables elles contiennent, quelles colonnes, de quel type, quelles clés, quelles vues…
+>
+> Son grand intérêt : elle est **définie par la norme SQL**, donc on l'interroge avec un simple `SELECT`, de la même façon dans MySQL, PostgreSQL ou SQL Server. Les tables les plus utiles :
+>
+> | Table | Contenu (une ligne par…) |
+> |---|---|
+> | `information_schema.tables` | table ou vue (colonne `table_type`) |
+> | `information_schema.columns` | colonne de chaque table : nom, type, NULL autorisé, valeur par défaut |
+> | `information_schema.views` | vue, avec sa définition |
+> | `information_schema.table_constraints` | contrainte (clé primaire, étrangère, unique, check) |
+> | `information_schema.key_column_usage` | colonne utilisée par une clé, et la table qu'elle référence |
+>
+> Exemple — les colonnes de la table `patient`, dans l'ordre :
+>
+> ```sql
+> SELECT column_name, data_type, is_nullable, column_default
+> FROM information_schema.columns
+> WHERE table_schema = 'essais_cliniques' AND table_name = 'patient'
+> ORDER BY ordinal_position;
+> ```
+>
+> ⚠️ Dans MySQL, la colonne `table_rows` de la requête ci-dessus est une **estimation** (pratique pour avoir un ordre de grandeur, pas un compte exact) : pour un nombre exact de lignes, on écrit `SELECT COUNT(*) FROM patient`.
+>
+> 💡 C'est d'ailleurs ce que fait DBeaver en coulisses pour afficher l'arborescence des tables et des colonnes dans le panneau de gauche.
+
 **Voir le contenu d'une table** : `SELECT *` (« toutes les colonnes ») :
 
 ```sql
