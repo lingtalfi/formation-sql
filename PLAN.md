@@ -133,15 +133,19 @@ Exemple de visuel texte (`LEFT JOIN`) :
 - 5.4 Filet de sécurité : transactions (`START TRANSACTION` / `ROLLBACK` / `COMMIT`), toujours tester le `SELECT` avant l'`UPDATE`
 
 ### Module 6 – Création de vues (≈ 3 h)
-- 6.1 `CREATE VIEW` simple, `CREATE OR REPLACE VIEW`, `DROP VIEW`
-- 6.2 Vues complexes (jointures + agrégats) comme couche d'indicateurs
-- 6.3 Les filtres `LIKE` / `IN` / `IS NULL` / `BETWEEN` appliqués aux vues
+- 6.1 Qu'est-ce qu'une vue (vs table, avantages)
+- 6.2 `CREATE VIEW` simple, `CREATE OR REPLACE VIEW`, `DROP VIEW`
+- 6.3 Vues complexes (jointures + agrégats) comme couche d'indicateurs, vues sur vues, vues modifiables et `WITH CHECK OPTION`
+- 6.4 Les filtres `LIKE` / `IN` / `IS NULL` / `BETWEEN` appliqués aux vues
 - **Fil rouge** : construire un jeu de vues `v_tableau_de_bord_*` (recrutement, observance des visites, sécurité) exploitables depuis Excel
 
 ### Module 7 – Préparation à la certification et bonus (≈ 4 h)
-- 7.1 Fiche de synthèse « SQL standard vs MySQL »
-- 7.2 Examen blanc : cas pratique + QCM
-- 7.3 Bonus indicateurs : fonctions de fenêtrage (`ROW_NUMBER`, cumul glissant), export CSV / connexion Excel
+- 7.1 L'examen en bref, conseils
+- 7.2 Fiche de synthèse (syntaxe, « SQL standard vs MySQL », 10 pièges)
+- 7.3 Examen blanc : cas pratique + 30 questions QCM/QCU
+- 7.4 Bonus : fonctions de fenêtrage (`ROW_NUMBER`, `RANK`, cumul, `LAG`)
+- 7.5 Bonus : tableau croisé en SQL (agrégat conditionnel)
+- 7.6 Bonus : export CSV / Excel, connexion ODBC, requête depuis VBA
 
 ---
 
@@ -152,15 +156,18 @@ formation-sql/
 ├── README.md
 ├── PLAN.md                  ← ce document
 ├── db/
-│   ├── 01_schema.sql        ← CREATE TABLE
+│   ├── essais_cliniques.sql ← LE script à charger (schéma + données ; le relancer = remise à zéro)
+│   ├── 01_schema.sql        ← CREATE TABLE commentés
 │   ├── 02_data.sql          ← données générées
 │   ├── generate_data.py     ← générateur déterministe
-│   ├── reset.sql
+│   ├── README.md            ← le domaine expliqué + schéma
 │   └── CHANGELOG.md         ← évolutions du schéma
 ├── cours/
 │   ├── 00-accueil.md
 │   ├── 01-concepts.md … 07-certification.md
 ├── exercices/
 │   └── solutions/
-└── quiz/
+├── quiz/                    ← examen blanc + corrigé
+└── outils/
+    └── resultats.py         ← recalcule les « résultats attendus » du cours à partir de la base
 ```
