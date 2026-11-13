@@ -166,7 +166,17 @@ FONCTIONS = [
 # ---------------------------------------------------------------------------
 
 
+def auto_increment(sql):
+    """INT … AUTO_INCREMENT → INTEGER PRIMARY KEY (équivalent SQLite)."""
+    if not re.search(r"AUTO_INCREMENT", sql, re.I):
+        return sql
+    sql = re.sub(r"(\w+)\s+INT\s+NOT\s+NULL\s+AUTO_INCREMENT", r"\1 INTEGER PRIMARY KEY", sql, flags=re.I)
+    sql = re.sub(r",\s*CONSTRAINT\s+\w+\s+PRIMARY\s+KEY\s*\(\s*\w+\s*\)", "", sql, flags=re.I)
+    return sql
+
+
 def traduit(sql):
+    sql = auto_increment(sql)
     sql = re.sub(r"TIMESTAMPDIFF\(\s*(\w+)\s*,", r"TIMESTAMPDIFF('\1',", sql, flags=re.I)
     sql = re.sub(r"INTERVAL\s+(-?\d+)\s+(DAY|WEEK|MONTH|YEAR)", r"'\1 \2'", sql, flags=re.I)
     sql = re.sub(r"EXTRACT\(\s*(\w+)\s+FROM\s+", r"EXTRACT_('\1', ", sql, flags=re.I)
@@ -225,7 +235,7 @@ def nouvelle_base():
         tete = re.sub(r"^(\s*--[^\n]*\n)*", "", stmt).strip().upper()
         if tete.startswith(("DROP DATABASE", "CREATE DATABASE", "USE ")):
             continue
-        stmt = re.sub(r"\bAUTO_INCREMENT\b", "", stmt)
+        stmt = auto_increment(stmt)
         con.execute(stmt)
     return con
 
