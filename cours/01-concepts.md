@@ -124,6 +124,18 @@ Un même serveur héberge **plusieurs bases** ; une base contient **plusieurs ta
 | **LCD / DCL** (contrôle) | Gérer les **droits** | `GRANT`, `REVOKE` | — |
 | **TCL** (transactions) | Valider / annuler un ensemble de modifications | `COMMIT`, `ROLLBACK` | 5 |
 
+**Que veulent dire ces sigles ?** Chaque famille a un sigle français et un sigle anglais (le plus courant dans la documentation et à l'examen) :
+
+| Sigle FR | En toutes lettres | Sigle EN | En anglais |
+|---|---|---|---|
+| **LDD** | Langage de **D**éfinition des **D**onnées | **DDL** | *Data Definition Language* |
+| **LMD** | Langage de **M**anipulation des **D**onnées | **DML** | *Data Manipulation Language* |
+| **LID** | Langage d'**I**nterrogation des **D**onnées | **DQL** | *Data Query Language* |
+| **LCD** | Langage de **C**ontrôle des **D**onnées | **DCL** | *Data Control Language* |
+| — | (contrôle des transactions) | **TCL** | *Transaction Control Language* |
+
+> Selon les sources, `SELECT` est parfois rangé dans le LMD/DML (il « manipule » les données en les lisant) : ne soyez pas surpris de voir seulement quatre familles, voire trois.
+
 > 💡 Dans la vie d'un analyste, **90 % du temps se passe en `SELECT`**. C'est pourquoi les modules 3 et 4 sont les plus longs.
 
 ### Règles d'écriture
