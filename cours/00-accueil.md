@@ -105,7 +105,14 @@ Menu **Éditeur SQL → Exécuter le script SQL** (*SQL Editor → Execute SQL S
 
 DBeaver exécute les instructions une par une (quelques secondes). Si une fenêtre de confirmation apparaît (le script commence par supprimer la base si elle existe), validez.
 
-À la fin, l'onglet **Statistiques** (*Statistics*), en bas de l'éditeur, résume l'exécution : nombre de requêtes et **0 erreur**. Si une erreur s'affiche, notez son message : c'est presque toujours la connexion qui n'a pas été choisie (étape 4.3).
+À la fin, l'onglet **Statistiques** (*Statistics*), en bas de l'éditeur, résume l'exécution. Comment savoir si **tout** le script a bien été exécuté ?
+
+| Ce que montre l'onglet *Statistics* | Signification |
+|---|---|
+| une ligne **Queries** (une trentaine de requêtes) et **Updated Rows** de plusieurs milliers | ✅ tout le script a été exécuté |
+| **Updated Rows : 0** et, dans **Query**, seulement un bloc de commentaires ou une seule instruction | ❌ seule l'instruction sous le curseur a été exécutée (vous avez fait **Ctrl + Entrée** au lieu de **Alt + X**) : recommencez avec **Alt + X** |
+
+Si une erreur s'affiche, notez son message : c'est presque toujours la connexion qui n'a pas été choisie (étape 4.3).
 
 **4.5 — Rafraîchir**
 
@@ -139,7 +146,9 @@ Après des exercices qui modifient les données (modules 2 et 5 surtout), ou si 
    (ou, s'il est encore ouvert dans un onglet, cliquez simplement sur cet onglet) ;
 2. vérifiez que le sélecteur de connexion affiche votre connexion MySQL (sinon **Ctrl + 9**) ;
 3. **Alt + X** (*Execute SQL Script*) ;
-4. **F5** sur la connexion dans le panneau de gauche.
+4. vérifiez l'onglet *Statistics* (voir le tableau de l'étape 4.4) ;
+5. **F5** sur la connexion dans le panneau de gauche ;
+6. si des onglets de tables sont ouverts (onglet *Data*), ils affichent encore les anciennes données : cliquez sur **Rafraîchir** (*Refresh*, en bas de la grille) ou appuyez sur **F5** dans la grille.
 
 Le script commence par `DROP DATABASE IF EXISTS essais_cliniques` : il **efface entièrement** la base puis la recrée à l'identique. Tout ce que vous y aviez ajouté (tables, vues, lignes modifiées) disparaît. Si vous voulez garder vos propres requêtes, enregistrez-les dans des fichiers `.sql` à part : elles ne sont pas stockées dans la base.
 
