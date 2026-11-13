@@ -2,6 +2,8 @@
 
 Toute la formation s'appuie sur cette base. Les données sont **entièrement fictives** (centres, médecins, patients, laboratoires et molécules inventés).
 
+> 📖 **Vous ne connaissez pas le monde des essais cliniques ?** Commencez par [**Comprendre la base**](comprendre-la-base.md) : les acteurs, le parcours d'un patient et les KPI, expliqués simplement.
+
 ## Installation en 1 minute
 
 1. Ouvrir DBeaver et se connecter au serveur MySQL local.
@@ -14,6 +16,7 @@ Toute la formation s'appuie sur cette base. Les données sont **entièrement fic
 | Fichier | Rôle |
 |---|---|
 | `essais_cliniques.sql` | **Le fichier à charger** : schéma + données |
+| `comprendre-la-base.md` | Le domaine expliqué aux non-spécialistes |
 | `01_schema.sql` | Le schéma seul (CREATE TABLE commentés) |
 | `02_data.sql` | Les données seules (générées) |
 | `generate_data.py` | Le générateur des données (déterministe) |
@@ -21,7 +24,7 @@ Toute la formation s'appuie sur cette base. Les données sont **entièrement fic
 
 ---
 
-## Le domaine en 5 minutes : qu'est-ce qu'un essai clinique ?
+## Le domaine en bref (version détaillée : [Comprendre la base](comprendre-la-base.md))
 
 Avant d'être vendu, un nouveau médicament doit prouver qu'il est **efficace** et **sans danger**. Pour cela, un laboratoire (le **promoteur**) organise un **essai clinique** (une **étude**) : on administre le médicament à des volontaires et on compare avec un groupe qui reçoit un **placebo** (un faux médicament).
 

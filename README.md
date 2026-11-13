@@ -9,7 +9,8 @@ Support de cours pour la certification **RS7205 – Langage SQL : Exploiter une 
 ## Démarrer
 
 1. Installer MySQL 8 et DBeaver, puis charger [`db/essais_cliniques.sql`](db/essais_cliniques.sql) : voir le [module 0](cours/00-accueil.md).
-2. Lire la présentation de la base et de son domaine : [`db/README.md`](db/README.md).
+2. Comprendre le domaine de la base (essais cliniques, acteurs, KPI), même sans rien y connaître : [**Comprendre la base**](db/comprendre-la-base.md).
+3. Référence technique de la base (tables, colonnes, schéma) : [`db/README.md`](db/README.md).
 
 ## Sommaire
 

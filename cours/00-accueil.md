@@ -107,7 +107,7 @@ Si vous obtenez ce nombre, tout est prêt. 🎉
 
 ## 0.3 La base d'entraînement en un coup d'œil
 
-Toute la formation utilise la base **`essais_cliniques`** : le suivi (fictif) d'essais cliniques de médicaments. Vous n'avez pas besoin de connaître ce domaine : le fichier [`db/README.md`](../db/README.md) l'explique en 5 minutes, avec tout le vocabulaire. Lisez-le maintenant.
+Toute la formation utilise la base **`essais_cliniques`** : le suivi (fictif) d'essais cliniques de médicaments. Vous n'avez pas besoin de connaître ce domaine : la page [**Comprendre la base**](../db/comprendre-la-base.md) l'explique simplement (les acteurs, le parcours d'un patient, les indicateurs). Lisez-la maintenant ; la référence technique est dans [`db/README.md`](../db/README.md).
 
 ```
 ETUDE ──< ETUDE_CENTRE >── CENTRE ──< INVESTIGATEUR
