@@ -158,6 +158,7 @@ FONCTIONS = [
     ("DATEDIFF", 2, f_datediff), ("CONCAT", -1, f_concat), ("CONCAT_WS", -1, f_concat_ws),
     ("DATE_ADD", 2, f_date_add), ("DATE_SUB", 2, f_date_sub), ("TIMESTAMPDIFF", 3, f_timestampdiff),
     ("EXTRACT_", 2, f_extract), ("DATE_FORMAT", 2, f_date_format),
+    ("CHAR_LENGTH", 1, lambda s: None if s is None else len(str(s))),
     ("LEFT", 2, f_left), ("RIGHT", 2, f_right), ("LPAD", 3, f_lpad), ("IF", 3, f_if),
 ]
 
