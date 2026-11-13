@@ -87,6 +87,8 @@ Ce sont exactement les requêtes que l'on apprend à écrire dans la formation.
 
 ## Le schéma
 
+> 📖 Que représentent ces tables, et qui sont les acteurs ? → [**Comprendre la base**](comprendre-la-base.md) (le domaine expliqué simplement).
+
 ```mermaid
 erDiagram
     ETUDE ||--o{ ETUDE_CENTRE : "est menée dans"

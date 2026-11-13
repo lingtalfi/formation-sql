@@ -269,6 +269,8 @@ SELECT code, phase, statut FROM etude;
 
 ### Visuel
 
+> 📖 Que représentent ces tables, et qui sont les acteurs ? → [**Comprendre la base**](../db/comprendre-la-base.md) (le domaine expliqué simplement).
+
 ```mermaid
 erDiagram
     ETUDE ||--o{ ETUDE_CENTRE : "est menée dans"

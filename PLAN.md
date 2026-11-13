@@ -25,6 +25,8 @@
 Tous les exemples et exercices de la formation utilisent **la même base**, entièrement **fictive**.
 Thème : le suivi d'essais cliniques (études, centres, patients, visites, événements indésirables). Ce domaine fournit naturellement des dates, des valeurs manquantes, des relations N–N et des indicateurs concrets (taux de recrutement, visites manquées, sécurité), donc des exemples riches pour tous les chapitres.
 
+> 📖 Que représentent ces tables, et qui sont les acteurs ? → [**Comprendre la base**](db/comprendre-la-base.md) (le domaine expliqué simplement).
+
 ```mermaid
 erDiagram
     ETUDE ||--o{ ETUDE_CENTRE : "est menée dans"
