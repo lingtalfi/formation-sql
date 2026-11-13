@@ -7,6 +7,10 @@
 --  → toutes les dates postérieures sont des dates prévues, pas encore réalisées.
 -- =====================================================================
 
+-- Le fichier est encodé en UTF-8 : on l'indique au serveur avant tout
+-- (sinon les accents peuvent être mal enregistrés selon le client utilisé).
+SET NAMES utf8mb4;
+
 DROP DATABASE IF EXISTS essais_cliniques;
 CREATE DATABASE essais_cliniques
   CHARACTER SET utf8mb4
@@ -159,6 +163,7 @@ CREATE TABLE mesure (
 --  Ne pas modifier à la main : modifier le générateur puis le relancer.
 -- =====================================================================
 
+SET NAMES utf8mb4;
 USE essais_cliniques;
 
 INSERT INTO etude (id, code, titre, phase, aire_therapeutique, promoteur, date_debut, date_fin_prevue, objectif_inclusions, statut) VALUES

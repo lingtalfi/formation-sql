@@ -293,6 +293,7 @@ data = [
     "--  Ne pas modifier à la main : modifier le générateur puis le relancer.",
     "-- =====================================================================",
     "",
+    "SET NAMES utf8mb4;",
     "USE essais_cliniques;",
     "",
     inserts("etude", ["id", "code", "titre", "phase", "aire_therapeutique", "promoteur",

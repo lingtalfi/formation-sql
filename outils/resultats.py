@@ -278,7 +278,7 @@ def nouvelle_base():
     script = BASE.read_text(encoding="utf-8")
     for stmt in decoupe(script):
         tete = re.sub(r"^(\s*--[^\n]*\n)*", "", stmt).strip().upper()
-        if tete.startswith(("DROP DATABASE", "CREATE DATABASE", "USE ")):
+        if tete.startswith(("DROP DATABASE", "CREATE DATABASE", "USE ", "SET ")):
             continue
         stmt = auto_increment(stmt)
         stmt = re.sub(r"(\bVARCHAR\(\d+\)|\bCHAR\(\d+\))", r"\1 COLLATE MYSQLCI", stmt)
