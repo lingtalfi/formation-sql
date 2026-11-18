@@ -1,7 +1,7 @@
 # Module 7 — Préparation à la certification et bonus « indicateurs »
 
-> **Objectif** : consolider les acquis pour l'examen (SQL standard), s'entraîner en conditions réelles, et découvrir des techniques avancées très utiles pour produire des indicateurs.
-> **Durée indicative** : 4 h
+> **Objectif** : consolider les acquis pour l'examen (SQL standard), s'entraîner en conditions réelles, découvrir des techniques avancées très utiles pour produire des indicateurs, et préparer ses extractions pour Excel et Power BI.
+> **Durée indicative** : 5 h
 
 ---
 
@@ -362,6 +362,226 @@ rs.Close: cn.Close
 ```
 
 > 💡 La bonne répartition des rôles : **SQL** pour filtrer, joindre et agréger (là où les données sont) ; **Excel / VBA** pour la mise en forme et la diffusion. Évitez de rapatrier 100 000 lignes dans Excel pour y faire un `RECHERCHEV` : une jointure fait mieux, plus vite.
+
+---
+
+## 7.7 Préparer ses données pour Excel et Power BI
+
+### Concept
+
+Une requête SQL ne sert pas seulement à « voir » des données dans DBeaver : très souvent, son résultat part ensuite dans **Excel** ou **Power BI** pour être mis en forme, partagé, transformé en graphique. Ce passage est une source classique de problèmes (dates non reconnues, nombres lus comme du texte, accents abîmés…). Cette section explique pourquoi, et comment les éviter.
+
+Il y a trois façons de faire passer les données de la base vers Excel ou Power BI :
+
+```
+                                    ┌────────────────────────┐
+  ① fichier CSV  (texte brut)  ───► │                        │   ⚠️ types perdus : Excel devine
+                                    │                        │
+  ② fichier XLSX (export DBeaver) ► │   Excel / Power BI     │   ✅ types conservés, mais photo figée
+                                    │                        │
+  ③ connexion directe à une VUE ──► │   (via Power Query)    │   ✅ types conservés ET actualisable
+                                    └────────────────────────┘
+```
+
+Le meilleur choix est presque toujours le **③**. Le **①** est le plus courant… et le plus piégeux.
+
+### Power Query, c'est quoi ?
+
+**Power Query** est l'outil d'**import et de préparation des données** intégré à Excel (onglet **Données → Obtenir et transformer**) et à Power BI (bouton **Transformer les données**). C'est le même moteur dans les deux logiciels.
+
+Il fonctionne en trois temps :
+
+```
+  SOURCE                      ÉTAPES (enregistrées)                 DESTINATION
+ ┌────────────────┐        ┌──────────────────────────────┐       ┌──────────────────────┐
+ │ base MySQL,    │        │ 1. se connecter à la vue     │       │ un tableau dans une  │
+ │ fichier CSV,   │ ─────► │ 2. type « Date » pour col. B │ ────► │ feuille Excel, ou    │
+ │ classeur Excel,│        │ 3. type « Décimal » col. D   │       │ une table du modèle  │
+ │ page web…      │        │ 4. supprimer la colonne E…   │       │ Power BI             │
+ └────────────────┘        └──────────────────────────────┘       └──────────────────────┘
+                                         ▲
+                     « Actualiser » rejoue toutes les étapes sur les données du moment
+```
+
+- On **se connecte** à une source (une base de données, un fichier, un dossier…).
+- On applique des **transformations** à la souris : choisir le type de chaque colonne, filtrer, renommer, fusionner deux sources… Power Query **enregistre chaque étape** (un peu comme l'enregistreur de macros, dans un langage appelé **M**).
+- On **charge** le résultat dans une feuille Excel ou dans le modèle Power BI.
+- Le mois suivant, un clic sur **Actualiser** rejoue toutes les étapes sur les nouvelles données : plus de copier-coller manuel.
+
+> 💡 **SQL ou Power Query ?** Les deux savent filtrer et transformer. Règle simple : ce qui réduit ou calcule les données (filtres, jointures, agrégats, KPI) se fait de préférence en **SQL, dans une vue**, au plus près des données ; Power Query sert à **se connecter**, **typer** les colonnes et faire de petits ajustements de présentation.
+
+### Pourquoi le CSV pose problème
+
+Un fichier **CSV** (*Comma-Separated Values*) est un simple **fichier texte** : une ligne par enregistrement, des valeurs séparées par un caractère. Il ne contient **aucune information de type** : rien ne dit que `2024-04-30` est une date ni que `79.4` est un nombre. Quand on double-clique dessus, **Excel devine**, en s'appuyant sur les **paramètres régionaux** de Windows. Sur un poste français, Excel attend :
+
+| | Ce qu'Excel (FR) attend | Ce qu'un export produit souvent |
+|---|---|---|
+| Séparateur de colonnes | `;` | `,` |
+| Séparateur décimal | `,` (`79,4`) | `.` (`79.4`) |
+| Format de date | `30/04/2024` | `2024-04-30` ou `2024-04-30 00:00:00` |
+| Encodage | UTF-8 **avec BOM** (ou Windows-1252) | UTF-8 sans BOM |
+
+Le fichier ressemble par exemple à ceci :
+
+```
+id,code_patient,date_inclusion,valeur
+1,CARDIO-01-C01-001,2024-04-30 00:00:00,79.4
+```
+
+D'où les symptômes typiques :
+
+| Symptôme dans Excel | Cause | Solution |
+|---|---|---|
+| Tout est dans la colonne A | séparateur `,` au lieu de `;` | exporter avec `;`, ou importer via Power Query |
+| Dates alignées à gauche, formules de date en erreur (`#VALEUR!`) | Excel n'a pas reconnu le format : la date est restée du **texte** | connexion directe, export XLSX, ou typage dans Power Query |
+| `79.4` lu comme du texte : somme et moyenne impossibles | séparateur décimal `.` | idem, ou choisir les paramètres régionaux dans Power Query |
+| `Ã©` au lieu de `é` | fichier UTF-8 sans BOM, lu comme Windows-1252 | exporter « avec BOM », ou choisir l'encodage UTF-8 à l'import |
+| Les codes `00123` deviennent `123` | Excel convertit en nombre | typer la colonne en **Texte** dans Power Query |
+
+### Les solutions, de la meilleure à la moins bonne
+
+**① Se connecter directement à une vue (recommandé)**
+
+Les types (date, nombre, texte) viennent de la base : plus rien à deviner, et les données sont actualisables.
+
+- **Excel** : **Données → Obtenir des données → À partir d'une base de données → À partir d'une base de données MySQL** (selon la version, un pilote MySQL est à installer ; sinon passer par **À partir d'autres sources → ODBC** avec le pilote *MySQL Connector/ODBC*, cf. 7.6). Serveur `localhost`, base `essais_cliniques`, puis choisir la **vue** dans le navigateur → **Charger**.
+- **Power BI** : **Obtenir les données → Base de données MySQL** → même principe.
+
+**② Exporter en XLSX depuis DBeaver**
+
+Clic droit sur la grille de résultats → **Exporter les données** (*Export data*) → **Excel (XLSX)**. Les dates et les nombres arrivent typés. Inconvénient : c'est une photo figée, à refaire à chaque mise à jour.
+
+**③ Si l'on doit passer par un CSV : l'importer avec Power Query, sans double-clic**
+
+Dans Excel : **Données → À partir d'un fichier texte/CSV** → choisir le fichier. Dans la fenêtre d'aperçu :
+1. **Origine du fichier** : `65001 : Unicode (UTF-8)` (corrige les accents) ;
+2. **Délimiteur** : celui du fichier (virgule, point-virgule…) ;
+3. cliquer sur **Transformer les données** ;
+4. pour chaque colonne de date ou de nombre : clic droit sur l'en-tête → **Modifier le type → Utilisation des paramètres régionaux…** → type *Date* (ou *Nombre décimal*) et paramètres régionaux **Anglais (États-Unis)** — c'est-à-dire « le fichier utilise le point décimal et des dates AAAA-MM-JJ » ;
+5. **Fermer et charger**.
+
+Ces réglages sont enregistrés : la prochaine fois, il suffira d'écraser le CSV et de cliquer sur **Actualiser**.
+
+**④ Produire un CSV « à la française » avec DBeaver**
+
+Dans l'assistant **Exporter les données → CSV**, régler :
+- **Délimiteur** : `;`
+- **Encodage** : `UTF-8` et cocher **Insérer un BOM** (*Insert BOM*) ;
+- le format des dates et des nombres se règle dans les paramètres de mise en forme de l'export (*Formatting*), qui reprennent les formats d'affichage de DBeaver.
+
+**⑤ En dernier recours : formater dans la requête SQL**
+
+On peut fabriquer soi-même le texte attendu par Excel :
+
+```sql
+SELECT p.code_patient,
+       DATE_FORMAT(p.date_inclusion, '%d/%m/%Y') AS date_inclusion_fr,
+       REPLACE(CAST(m.valeur AS CHAR), '.', ',')  AS valeur_fr
+FROM mesure m
+JOIN visite  v ON m.visite_id  = v.id
+JOIN patient p ON v.patient_id = p.id
+WHERE m.parametre = 'poids'
+ORDER BY m.id
+LIMIT 3;
+```
+
+```text
++-------------------+-------------------+-----------+
+| code_patient      | date_inclusion_fr | valeur_fr |
++-------------------+-------------------+-----------+
+| CARDIO-01-C01-001 | 30/04/2024        | 75,50     |
+| CARDIO-01-C01-001 | 30/04/2024        | 76,40     |
+| CARDIO-01-C01-001 | 30/04/2024        | 77,10     |
++-------------------+-------------------+-----------+
+3 lignes
+```
+
+Ça marche pour un export ponctuel, mais attention : dans le résultat SQL, ces colonnes sont devenues du **texte**. On ne peut plus les trier ni calculer correctement côté SQL (`'01/02/2025' < '30/01/2024'` en ordre alphabétique !). Réservez cette technique à la toute dernière étape, et préférez les solutions ① à ③.
+
+### Donner aux données la bonne forme
+
+Le format d'une extraction dépend de ce que l'on va en faire.
+
+**Pour Power BI (ou un tableau croisé dynamique Excel) : le format « long »**
+
+Une ligne = **un fait** (une mesure, une visite, un EI), avec toutes les colonnes qui permettent de filtrer et de regrouper. On **ne pré-agrège pas** : c'est Power BI (ou le TCD) qui fera les totaux selon les filtres choisis par l'utilisateur.
+
+<!-- exec -->
+```sql
+CREATE OR REPLACE VIEW v_export_mesures AS
+SELECT m.id                   AS mesure_id,
+       e.code                 AS etude,
+       c.nom                  AS centre,
+       c.pays,
+       p.code_patient,
+       p.sexe,
+       p.bras,
+       v.type_visite,
+       v.date_realisee        AS date_mesure,
+       m.parametre,
+       m.valeur,
+       m.unite
+FROM mesure m
+JOIN visite  v ON m.visite_id  = v.id
+JOIN patient p ON v.patient_id = p.id
+JOIN etude   e ON p.etude_id   = e.id
+JOIN centre  c ON p.centre_id  = c.id;
+```
+
+```sql
+SELECT * FROM v_export_mesures ORDER BY mesure_id LIMIT 4;
+```
+<!-- resultat -->
+```text
++-----------+-----------+--------------------------+--------+-------------------+------+---------+-------------+-------------+-----------+--------+-------+
+| mesure_id | etude     | centre                   | pays   | code_patient      | sexe | bras    | type_visite | date_mesure | parametre | valeur | unite |
++-----------+-----------+--------------------------+--------+-------------------+------+---------+-------------+-------------+-----------+--------+-------+
+| 1         | CARDIO-01 | Clinique du Val de Loire | France | CARDIO-01-C01-001 | M    | placebo | V0          | 2024-04-30  | poids     | 75.5   | kg    |
+| 2         | CARDIO-01 | Clinique du Val de Loire | France | CARDIO-01-C01-001 | M    | placebo | V0          | 2024-04-30  | pas       | 154    | mmHg  |
+| 3         | CARDIO-01 | Clinique du Val de Loire | France | CARDIO-01-C01-001 | M    | placebo | V0          | 2024-04-30  | pad       | 96     | mmHg  |
+| 4         | CARDIO-01 | Clinique du Val de Loire | France | CARDIO-01-C01-001 | M    | placebo | V1          | 2024-05-15  | poids     | 76.4   | kg    |
++-----------+-----------+--------------------------+--------+-------------------+------+---------+-------------+-------------+-----------+--------+-------+
+4 lignes
+```
+<!-- /resultat -->
+
+**Pour un rapport Excel prêt à lire : le format « large », pré-calculé**
+
+Une ligne = **un objet du rapport** (une étude, un centre, un mois), les indicateurs déjà calculés, éventuellement pivotés (une colonne par mois, par grade… cf. 7.5). C'est ce que font les vues `v_tableau_de_bord_*` du module 6.
+
+```
+  FORMAT LONG (Power BI, TCD)                 FORMAT LARGE (rapport figé)
+ ┌────────┬──────────┬───────┬────┐          ┌────────┬──────┬──────┬──────┐
+ │ etude  │ mois     │ bras  │ nb │          │ etude  │ janv │ févr │ mars │
+ ├────────┼──────────┼───────┼────┤   ───►   ├────────┼──────┼──────┼──────┤
+ │ DIAB   │ 2026-01  │ trait │ 2  │          │ DIAB   │ 4    │ 2    │ 2    │
+ │ DIAB   │ 2026-01  │ placb │ 2  │          │ ONCO   │ 3    │ 0    │ 5    │
+ │ …      │ …        │ …     │ …  │          └────────┴──────┴──────┴──────┘
+ └────────┴──────────┴───────┴────┘
+  souple : l'outil regroupe à la demande        lisible tel quel, mais figé
+```
+
+**Les règles d'une bonne vue d'export**
+
+- **Des noms de colonnes clairs**, sans espaces (`date_inclusion`, pas `Date d'inclusion du patient`) : on renomme pour l'affichage dans l'outil.
+- **Une colonne = un type** : les dates restent des `DATE`, les nombres des nombres. Pas de `'N/A'` dans une colonne numérique.
+- **Des dates au vrai type `DATE`** plutôt que du texte formaté (cf. ⑤).
+- **NULL ≠ 0** : décidez consciemment s'il faut transformer un NULL en 0 (`COALESCE`) — « aucun EI » vaut 0, mais « mesure non faite » n'est pas « mesure = 0 ».
+- **Pas de lignes de sous-total** dans les données : les totaux sont l'affaire de l'outil.
+- **Une clé** (un identifiant unique par ligne) facilite les relations et les contrôles dans Power BI.
+
+### Calculer dans SQL ou dans Excel / Power BI ?
+
+| Plutôt dans SQL (une vue) | Plutôt dans Excel / Power BI |
+|---|---|
+| Filtres, jointures entre tables | Mise en forme, graphiques |
+| Règles métier partagées (« un échec de screening = date d'inclusion vide ») | Calculs qui dépendent des filtres choisis par l'utilisateur (Power BI : mesures **DAX**) |
+| Indicateurs de référence, identiques pour tous | Simulations ponctuelles, « et si… ? » |
+| Gros volumes : on n'envoie que le résultat | Petits ajustements de présentation |
+
+> 💡 Un indicateur défini dans une vue est calculé **de la même façon pour tout le monde**, quel que soit l'outil qui l'affiche. C'est la meilleure garantie que deux rapports ne donneront pas deux chiffres différents.
+
+👉 Exercices : [`exercices/07-export.md`](../exercices/07-export.md)
 
 ---
 

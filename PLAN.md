@@ -141,13 +141,14 @@ Exemple de visuel texte (`LEFT JOIN`) :
 - 6.4 Les filtres `LIKE` / `IN` / `IS NULL` / `BETWEEN` appliqués aux vues
 - **Fil rouge** : construire un jeu de vues `v_tableau_de_bord_*` (recrutement, observance des visites, sécurité) exploitables depuis Excel
 
-### Module 7 – Préparation à la certification et bonus (≈ 4 h)
+### Module 7 – Préparation à la certification et bonus (≈ 5 h)
 - 7.1 L'examen en bref, conseils
 - 7.2 Fiche de synthèse (syntaxe, « SQL standard vs MySQL », 10 pièges)
 - 7.3 Examen blanc : cas pratique + 30 questions QCM/QCU
 - 7.4 Bonus : fonctions de fenêtrage (`ROW_NUMBER`, `RANK`, cumul, `LAG`)
 - 7.5 Bonus : tableau croisé en SQL (agrégat conditionnel)
 - 7.6 Bonus : export CSV / Excel, connexion ODBC, requête depuis VBA
+- 7.7 Préparer ses données pour Excel et Power BI : Power Query, pièges du CSV (dates, décimales, encodage), export XLSX, connexion directe à une vue, format long vs large, où calculer les KPI
 
 ---
 

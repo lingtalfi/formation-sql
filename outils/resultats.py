@@ -138,6 +138,17 @@ def f_date_format(v, fmt):
             .replace("%d", f"{v.day:02d}").replace("%M", mois[v.month - 1]))
 
 
+def f_str_to_date(t, fmt):
+    """STR_TO_DATE pour les formats simples (%Y %m %d et séparateurs)."""
+    if t is None:
+        return None
+    rx = re.escape(fmt).replace("%Y", r"(?P<Y>\d{4})").replace("%m", r"(?P<m>\d{1,2})").replace("%d", r"(?P<d>\d{1,2})")
+    m = re.fullmatch(rx, str(t))
+    if not m:
+        return None
+    return dt.date(int(m["Y"]), int(m["m"]), int(m["d"])).isoformat()
+
+
 def f_left(s, n):
     return None if s is None else str(s)[:n]
 
@@ -162,6 +173,7 @@ FONCTIONS = [
     ("UPPER", 1, lambda s: None if s is None else str(s).upper()),
     ("LOWER", 1, lambda s: None if s is None else str(s).lower()),
     ("CHAR_LENGTH", 1, lambda s: None if s is None else len(str(s))),
+    ("STR_TO_DATE", 2, f_str_to_date),
     ("LEFT", 2, f_left), ("RIGHT", 2, f_right), ("LPAD", 3, f_lpad), ("IF", 3, f_if),
 ]
 

@@ -23,7 +23,7 @@ Support de cours pour la certification **RS7205 – Langage SQL : Exploiter une 
 | 4 — Requêtes multi-tables | [cours](cours/04-jointures.md) | [énoncés](exercices/04-jointures.md) | [corrigés](exercices/solutions/04-jointures.md) |
 | 5 — Mise à jour des données | [cours](cours/05-mise-a-jour.md) | [énoncés](exercices/05-mise-a-jour.md) | [corrigés](exercices/solutions/05-mise-a-jour.md) |
 | 6 — Création de vues | [cours](cours/06-vues.md) | [énoncés](exercices/06-vues.md) | [corrigés](exercices/solutions/06-vues.md) |
-| 7 — Certification et bonus | [cours](cours/07-certification.md) | [examen blanc](quiz/examen-blanc.md) | [corrigé](quiz/examen-blanc-corrige.md) |
+| 7 — Certification et bonus (dont export vers Excel / Power BI) | [cours](cours/07-certification.md) | [examen blanc](quiz/examen-blanc.md) · [export](exercices/07-export.md) | [corrigé](quiz/examen-blanc-corrige.md) · [export](exercices/solutions/07-export.md) |
 
 Plan détaillé et principes pédagogiques : [PLAN.md](PLAN.md).
 
