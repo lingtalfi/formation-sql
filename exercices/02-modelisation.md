@@ -40,3 +40,9 @@ Dessiner le MCD (entités, associations, cardinalités) puis en déduire le MLD.
 | CARDIO-01-C01-002 | CARDIO-01 | Labo Alvéa | Clinique Val de Loire | Tours | V0 | |
 
 **Ex 2.6 — Sauvegarde.** a) Faire un dump complet de `essais_cliniques` avec DBeaver. b) Écrire la commande `mysqldump` qui sauvegarde uniquement la table `evenement_indesirable`. c) Créer par SQL une copie de la table `visite` nommée `visite_copie`, vérifier qu'elle contient autant de lignes que l'originale, puis la supprimer.
+
+**Ex 2.7 — Personne ou participation ?** Dans notre base, une ligne de `patient` représente la participation d'une personne à **une** étude (voir l'encadré du cours, section 2.2). Un hôpital souhaite au contraire suivre les **personnes** : une même personne (nom, prénom, date de naissance, sexe) peut participer à plusieurs études au fil du temps, et pour chaque participation on garde l'étude, le centre, la date d'inclusion, le bras, la date et le motif de sortie.
+- a) Dessiner le MCD correspondant (entités, association, cardinalités).
+- b) En déduire le MLD. À quelle table se rattachent alors les visites et les événements indésirables : à la personne ou à la participation ? Pourquoi ?
+- c) Écrire la requête qui, dans ce nouveau modèle, liste les personnes ayant participé à au moins deux études.
+

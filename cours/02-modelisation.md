@@ -116,6 +116,16 @@ Lecture des cardinalités (on lit **depuis l'entité**, vers l'association) :
 - **PATIENT — 1,1 — INCLURE** : un patient appartient à **une et une seule** étude.
 - **ÉTUDE — 0,n — INCLURE** : une étude a **0 à n** patients.
 
+> 🤔 **Un patient ne peut donc appartenir qu'à une seule étude ? N'est-ce pas limitant ?**
+> Si Alice participe à CARDIO-01 puis, plus tard, à DIAB-02, la base contient **deux lignes `patient`**, avec deux codes différents. Dans notre modèle, une ligne de `patient` ne représente pas *une personne*, mais **la participation d'une personne à une étude** (on pourrait l'appeler « patient d'une étude »). C'est le choix habituel en recherche clinique :
+> - chaque étude a **ses propres données** pour Alice (date d'inclusion, bras, visites, sortie) : il faut de toute façon une ligne par participation ;
+> - par **confidentialité**, chaque étude identifie le patient par un code anonyme qui lui est propre ; on ne cherche pas à relier les participations d'une même personne ;
+> - la plupart des protocoles **interdisent** de participer à deux essais en même temps.
+>
+> Si l'on voulait suivre la personne elle-même (par exemple dans le système d'un hôpital), on séparerait les deux notions : une entité PERSONNE et une association PARTICIPER (0,n — 0,n) avec ÉTUDE… c'est l'exercice 2.7.
+>
+> 💡 Retenez la leçon de modélisation : **avant de compter, demandez-vous ce que représente exactement une ligne** de la table (« une personne » ? « une participation » ? « une visite » ?). Beaucoup d'erreurs d'indicateurs viennent de là.
+
 ### Les règles de passage MCD → MLD
 
 ```

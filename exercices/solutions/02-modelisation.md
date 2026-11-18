@@ -133,3 +133,48 @@ SELECT
 ```sql
 DROP TABLE visite_copie;
 ```
+
+**Ex 2.7**
+
+a) MCD
+
+```
+ ┌───────────────┐ 0,n  ╭──────────────────╮ 0,n  ┌─────────┐
+ │   PERSONNE    │──────│    PARTICIPER    │──────│  ÉTUDE  │
+ │───────────────│      │──────────────────│      └─────────┘
+ │ id_personne   │      │ date_inclusion   │
+ │ nom           │      │ bras             │
+ │ prenom        │      │ date_sortie      │
+ │ date_naissance│      │ motif_sortie     │
+ │ sexe          │      ╰──────────────────╯
+ └───────────────┘
+```
+
+Une personne participe à 0..n études ; une étude a 0..n participants : association plusieurs-à-plusieurs. (Le centre est aussi lié à chaque participation : en toute rigueur, l'association relie PERSONNE, ÉTUDE et CENTRE.)
+
+b) MLD
+
+```
+personne      (_id_, nom, prenom, date_naissance, sexe)
+participation (_id_, #personne_id, #etude_id, #centre_id, code_patient,
+               date_screening, date_inclusion, bras, date_sortie, motif_sortie)
+visite        (_id_, #participation_id, type_visite, date_prevue, date_realisee)
+evenement_indesirable (_id_, #participation_id, …)
+```
+
+On donne à `participation` sa propre clé `id` (plutôt qu'une clé composée `personne_id, etude_id`) car d'autres tables la référencent, et parce qu'une personne pourrait en théorie être screenée deux fois pour la même étude.
+
+Les visites et les EI se rattachent à la **participation** : une visite V3 n'a de sens que dans le calendrier d'une étude précise, et un EI doit être déclaré dans l'étude pendant laquelle il survient (en particulier pour comparer le bras traitement et le bras placebo).
+
+c)
+
+```sql
+SELECT pe.id, pe.nom, pe.prenom, COUNT(DISTINCT pa.etude_id) AS nb_etudes
+FROM personne pe
+JOIN participation pa ON pa.personne_id = pe.id
+GROUP BY pe.id, pe.nom, pe.prenom
+HAVING COUNT(DISTINCT pa.etude_id) >= 2;
+```
+
+(Cette requête porte sur le modèle imaginé dans l'exercice : elle ne s'exécute pas sur `essais_cliniques`.)
+
